@@ -1,20 +1,19 @@
 # Copia este archivo a terraform.tfvars y rellena los valores.
-# terraform.tfvars esta en .gitignore (no se sube nunca).
+# terraform.tfvars esta en .gitignore (no se sube nunca). NO pongas ninguno de estos valores reales
+# (IDs, IPs, emails, etc.) directamente en los .tf ni en un commit: van todos aqui.
+
+# ID de tu suscripcion de Azure (obligatorio, sin valor por defecto).
+# Consultalo con: az account show --query id -o tsv
+subscription_id = "TU-SUBSCRIPTION-ID-AQUI"
 
 # Version de Minecraft y del loader de mods (obligatorio).
 # Valores actuales: modpack "EL MINE MAS INMERSIVO 2" (Shyoshi, CurseForge project 1588070),
 # que pide Minecraft 1.21.1 con NeoForge (no Forge clasico).
 mc_version    = "1.21.1"
 mod_loader    = "neoforge"   # "forge" o "neoforge" segun lo que pida tu modpack
-forge_version = "21.1.48"   # version del loader (de NeoForge en este caso; ver https://maven.neoforged.net/releases/net/neoforged/neoforge/ o https://files.minecraftforge.net si usas Forge clasico)
+forge_version = "21.1.225"  # version exacta que usa el modpack (confirmada en la app de CurseForge: Profile Options > Current Modloader Versions)
 
 # Tu IP publica /32 para poder entrar por SSH.
 # Detectala con:  curl -s https://api.ipify.org
 allowed_ssh_cidr = "TU.IP.PUBLICA.AQUI/32"
 
-# Etiqueta DNS unica en la region (host final: <label>.spaincentral.cloudapp.azure.com)
-# Distinta a la del servidor Paper ("christmc") si desplegais los dos a la vez.
-dns_label = "elige-un-nombre-unico-forge"
-
-# Email de alertas
-alert_email

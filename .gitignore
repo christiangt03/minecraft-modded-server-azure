@@ -19,3 +19,14 @@ start-url.txt
 
 # Config local de Claude Code
 .claude/
+
+# Servidor Forge local (server/): no versionar binarios, mundo ni jars de mods.
+server/mods/*.jar
+server/mods/*.jar.disabled
+server/libraries/
+server/world/
+server/logs/
+server/crash-reports/
+server/forge-installer.jar
+server/forge-*.jar
+server/*.log
