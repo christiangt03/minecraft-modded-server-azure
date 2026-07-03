@@ -1,0 +1,6 @@
+# Argumentos JVM para el servidor (usados por run.sh / run.bat que genera el instalador de NeoForge).
+# El modpack elegido (EL MINE MAS INMERSIVO 2, ~270 mods, categoria "Extra Large" en CurseForge) pide
+# bastante mas que un modpack pequeno. Si pruebas en local, ajusta a la RAM real de tu maquina; en
+# Azure (VM Standard_B4ms, 16 GiB) se despliega con -Xms8G -Xmx8G (ver scripts/mc-setup.sh).
+-Xms4G
+-Xmx8G
