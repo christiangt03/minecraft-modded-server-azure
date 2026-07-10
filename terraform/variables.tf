@@ -40,9 +40,9 @@ variable "location" {
 }
 
 variable "vm_size" {
-  description = "Tamano de la VM. Subido de B2s (4 GiB, el original para Paper vanilla) a B4ms (4 vCPU / 16 GiB): el autor del modpack recomienda 12288 MB (12 GiB) de heap (dato real de la app de CurseForge, no una estimacion) -> hace falta mas RAM total que la que da B2s (4 GiB) o B2ms (8 GiB, no dejaria margen para el sistema). B4ms es el tamano burstable mas barato que cubre 12 GiB de heap dejando ~4 GiB de margen; si hay caidas/OOM en produccion, sube a B8ms (8 vCPU / 32 GiB)."
+  description = "Tamano de la VM. Subido de B2s (4 GiB, el original para Paper vanilla) a 4 vCPU / 16 GiB: el autor del modpack recomienda 12288 MB (12 GiB) de heap (dato real de la app de CurseForge, no una estimacion) -> hace falta mas RAM total que la que da B2s (4 GiB) o B2ms (8 GiB, no dejaria margen para el sistema). Se usa B4s_v2 (familia Bsv2, cuota 10 vCPU libre en esta sub) y NO B4ms (familia BS, cuota de solo 4 vCPU de la que el servidor Paper B2s ya consume 2): con B4ms los dos servidores no podrian estar encendidos a la vez. Ojo: la cuota regional total es 6 vCPU, asi que con ambos encendidos (2+4) se queda justo al limite; no se puede subir a B8s_v2 sin pedir mas cuota."
   type        = string
-  default     = "Standard_B4ms"
+  default     = "Standard_B4s_v2"
 }
 
 variable "use_spot" {
@@ -70,4 +70,65 @@ variable "allowed_ssh_cidr" {
 
 variable "dns_label" {
   description = "Etiqueta DNS para la IP publica -> {label}.spaincentral.cloudapp.azure.com (unica en la region)"
-  type        = st
+  type        = string
+}
+
+variable "alert_email" {
+  description = "Email para las alertas de Azure"
+  type        = string
+}
+
+variable "discord_webhook_url" {
+  description = "Webhook de Discord para alertas de CPU/RAM/disco/crash (opcional). Vacio = desactivado."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "mc_max_players" {
+  description = "Maximo de jugadores"
+  type        = number
+  default     = 10
+}
+
+variable "idle_minutes" {
+  description = "Minutos sin jugadores antes de auto-apagar la VM (10 para ahorrar; el arranque bajo demanda hace barato volver a encender)"
+  type        = number
+  default     = 10
+}
+
+variable "backup_retention_days" {
+  description = "Dias que se conservan los backups en el blob"
+  type        = number
+  default     = 30
+}
+
+variable "enable_start_function" {
+  description = "Crear la Azure Function con boton web para que los amigos enciendan la VM bajo demanda"
+  type        = bool
+  default     = false
+}
+
+variable "function_location" {
+  description = "Region para la Function de arranque. Y1 Linux no existe en spaincentral y la politica de la sub de estudiante solo permite: switzerlandnorth, francecentral, spaincentral, italynorth, norwayeast."
+  type        = string
+  default     = "francecentral"
+}
+
+variable "cpu_threshold" {
+  description = "Umbral de alerta de CPU (%)"
+  type        = number
+  default     = 90
+}
+
+variable "ram_threshold" {
+  description = "Umbral de alerta de RAM (%)"
+  type        = number
+  default     = 90
+}
+
+variable "disk_threshold" {
+  description = "Umbral de alerta de disco (%)"
+  type        = number
+  default     = 85
+}

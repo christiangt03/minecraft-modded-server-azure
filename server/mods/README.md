@@ -58,4 +58,8 @@ Ese script re-descarga los mods vía la API oficial de CurseForge a esta misma c
 ## Reglas importantes para un servidor NeoForge modded
 
 - Todos los jugadores necesitan **exactamente los mismos mods y versiones** instalados en su
-  cliente (
+  cliente (salvo mods "client-side only" — shaders, resource packs, algunos mods de UI/sonido — que
+  solo van en el cliente, nunca aquí).
+- El servidor y el cliente deben usar la **misma versión de Minecraft (1.21.1) y de NeoForge (21.1.225)**.
+- Recursos client-only del pack (resource pack "EMMI2 RESOURCES", shaders) **no hacen falta en el
+  servidor** y no se copiaron aquí.

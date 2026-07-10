@@ -69,16 +69,22 @@ sin apenas mods. Este modpack (270 dependencias, categoría "Extra Large") **el 
 
 - `Standard_B2s` (4 GiB total) y `Standard_B2ms` (8 GiB total) no llegan ni de lejos a 12 GiB de
   heap — descartados.
-- **`Standard_B4ms`** (4 vCPU / 16 GiB) es el tamaño **burstable más barato** que cubre los 12 GiB
-  recomendados, con `-Xms12G -Xmx12G` en el despliegue de Azure (`scripts/mc-setup.sh`). Es el que
-  quedó configurado por defecto (`terraform/variables.tf`).
+- **`Standard_B4s_v2`** (4 vCPU / 16 GiB) es el tamaño configurado por defecto
+  (`terraform/variables.tf`): burstable, cubre los 12 GiB recomendados con `-Xms12G -Xmx12G` en el
+  despliegue de Azure (`scripts/mc-setup.sh`).
+  **Por qué Bsv2 y no `B4ms` (familia BS):** en esta suscripción de estudiante la cuota de la
+  familia BS en `spaincentral` es de **solo 4 vCPU**, y el servidor Paper (`B2s`) ya consume 2.
+  Un `B4ms` (4 vCPU BS) haría imposible tener **los dos servidores encendidos a la vez** (2+4 > 4).
+  La familia Bsv2 tiene cuota propia de 10 vCPU sin usar, así que `B2s` (BS) + `B4s_v2` (Bsv2)
+  conviven sin chocar. Ojo: la cuota **regional total** es 6 vCPU → con ambos encendidos (2+4=6)
+  se queda justo al límite; no cabe nada más sin pedir ampliación de cuota.
   ⚠️ Con 12 GiB de heap sobre 16 GiB totales quedan solo ~4 GiB para SO/GC/metaspace — funciona para
   pocos jugadores, pero es más justo que lo ideal (los 30-40% de margen que se suelen recomendar).
-  Si notas caídas o errores de memoria (OOM), sube a **`Standard_B8ms`** (8 vCPU / 32 GiB, ~2x precio)
-  para tener margen cómodo; se deja documentado aquí en vez de subirlo por defecto para no
-  sobredimensionar sin necesidad.
+  Si notas caídas o errores de memoria (OOM), el salto sería a **`Standard_B8s_v2`** (8 vCPU / 32 GiB,
+  ~2x precio), pero requiere pedir ampliación de la cuota regional de 6 vCPU (con el Paper apagado
+  también excedería: 8 > 6).
 - **Precio aproximado** (Linux, pay-as-you-go, orientativo — varía por región/momento):
-  `B2s` ≈ \$0.042/h, `B4ms` ≈ \$0.166/h (~4x), `B8ms` ≈ \$0.33/h (~8x). Con el patrón de "VM apagada
+  `B2s` ≈ \$0.042/h, `B4s_v2` ≈ \$0.15-0.17/h (~4x), `B8s_v2` ≈ \$0.30-0.34/h (~8x). Con el patrón de "VM apagada
   por defecto, se enciende solo mientras se juega" que ya tenía el proyecto, el coste en reposo casi
   no cambia (es sobre todo el disco); el coste por hora jugada sube en proporción al tamaño elegido.
   Para una cifra exacta en tu región (`spaincentral`) usa la
@@ -91,4 +97,25 @@ sin apenas mods. Este modpack (270 dependencias, categoría "Extra Large") **el 
 
 ## Diferencias con el proyecto Paper original
 
-- **Loader:** NeoForge (no Paper, y no Forge clásico tampoco — el modpack eleg
+- **Loader:** NeoForge (no Paper, y no Forge clásico tampoco — el modpack elegido lo requiere).
+  `scripts/mc-setup.sh` soporta ambos (`mod_loader = "forge"` o `"neoforge"` en las variables de
+  Terraform) y descarga el instalador correspondiente (`maven.neoforged.net` o
+  `maven.minecraftforge.net`). No se instala Geyser/Floodgate (en NeoForge/Forge, Geyser es un mod,
+  no un plugin de Spigot — si se quiere, va en `server/mods/`).
+- **Arranque del servicio:** `minecraft.service` ejecuta `run.sh` (el script que genera el instalador
+  del loader), no un `.jar` directo.
+- **Tamaño de VM y disco:** ver sección de coste arriba.
+- **`prefix` de recursos Azure:** `mcforge` en vez de `mcserver`, para no chocar con el servidor
+  Paper si ambos se despliegan en la misma suscripción.
+- **Sin secretos heredados:** `terraform.tfvars`, `terraform.tfstate(.backup)` y `start-url.txt` se
+  reiniciaron a plantillas vacías al copiar el proyecto — los del proyecto Paper original apuntaban
+  a *ese* despliegue.
+- **Repo git:** se reinició por completo (`git init` nuevo) — ya no arrastra el historial del
+  proyecto Paper.
+- **Mods:** se consiguieron con la CurseForge App (instalación local + copia de su carpeta `mods/`),
+  no con la API de terceros — conseguir una API key de CurseForge no es instantáneo (requiere
+  solicitud y aprobación manual de Overwolf), así que se optó por la vía local. `scripts/fetch-modpack.ps1`
+  queda documentado como alternativa si en el futuro se consigue una key.
+
+## Lo demás (backups, alertas, encendido/apagado bajo demanda) funciona igual que en el proyecto
+original — ver los scripts en `scripts/` y `terraform/` para el detalle; no se repite aquí.

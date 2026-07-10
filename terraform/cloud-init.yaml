@@ -159,4 +159,8 @@ write_files:
       Persistent=true
 
       [Install]
-      
+      WantedBy=timers.target
+
+runcmd:
+  - curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+  - bash /opt/mc/mc-setup.sh

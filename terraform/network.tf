@@ -91,4 +91,10 @@ resource "azurerm_network_interface" "main" {
   resource_group_name = azurerm_resource_group.main.name
   tags                = local.tags
 
-  ip_configuration 
+  ip_configuration {
+    name                          = "internal"
+    subnet_id                     = azurerm_subnet.main.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.main.id
+  }
+}

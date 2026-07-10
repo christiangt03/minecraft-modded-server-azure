@@ -59,8 +59,9 @@ EOF
 
 # --- Argumentos JVM (usados por run.sh que genera el instalador) ---
 # 12G/12G: RAM recomendada por el propio autor del modpack (12288MB, visible en la app de CurseForge
-# en Profile Options). Sobre una VM Standard_B4ms (16 GiB) deja ~4 GiB para SO/GC/metaspace: justo
-# pero funcional para pocos jugadores. Si ves caidas/OOM, sube a Standard_B4ms -> Standard_B8ms (32 GiB).
+# en Profile Options). Sobre una VM Standard_B4s_v2 (16 GiB) deja ~4 GiB para SO/GC/metaspace: justo
+# pero funcional para pocos jugadores. Si ves caidas/OOM, sube a Standard_B8s_v2 (32 GiB) — requiere
+# ampliar la cuota regional de 6 vCPU de la suscripcion (ver README).
 cat > "$MC_DIR/user_jvm_args.txt" <<EOF
 -Xms12G
 -Xmx12G
