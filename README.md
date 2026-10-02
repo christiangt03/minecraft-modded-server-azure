@@ -1,15 +1,15 @@
-# Servidor de Minecraft modded — EL MINE MAS INMERSIVO 2
+# Servidor de Minecraft con mods en Azure (NeoForge)
 
-Este proyecto es una **copia adaptada** de `Proyectis/Servidor de minecraft` (el servidor **PaperMC**
-ya desplegado en Azure), como punto de partida para un servidor **modded**. Se ha modificado la
-parte de instalación de Paper a un loader de mods; el resto de la infraestructura (VM apagada por
-defecto, backups, alertas, auto-apagado) se mantiene igual.
+Variante con mods de [minecraft-server-azure](https://github.com/christiangt03/minecraft-server-azure),
+el servidor PaperMC desplegado en Azure con Terraform. Se ha cambiado la instalación de Paper por el
+loader de mods NeoForge y se ha redimensionado la VM; el resto de la infraestructura (VM apagada por
+defecto, encendido bajo demanda, backups, alertas y auto-apagado por inactividad) es la misma.
 
-## Estado: mods ya incluidos ✅
+## Estado
 
-Los 244 `.jar` del modpack ya están descargados en `server/mods/` (~724 MB) — se copiaron el
-2026-07-03 desde una instalación local hecha con la CurseForge App (ver `server/mods/README.md` para
-el detalle). Solo falta instalar el binario del servidor NeoForge para poder arrancarlo.
+Los mods del modpack (244 `.jar` de servidor, unos 724 MB) se descargan aparte y no se incluyen en
+el repositorio; en `server/mods/README.md` está explicado cómo obtenerlos. Falta instalar el binario
+del servidor NeoForge para poder arrancarlo (ver "Pasos pendientes").
 
 ## Modpack elegido
 
@@ -18,8 +18,7 @@ el detalle). Solo falta instalar el binario del servidor NeoForge para poder arr
 
 - **Minecraft:** `1.21.1`
 - **Loader:** **NeoForge `21.1.225`** (versión exacta confirmada en la app de CurseForge — corrige la
-  estimación inicial de `21.1.48`) — ⚠️ el modpack pide NeoForge, **no Forge clásico** (aunque el
-  proyecto se llame "con mods forge"). Se adaptó toda la instalación en consecuencia (ver abajo).
+  estimación inicial de `21.1.48`) — el modpack pide NeoForge, **no Forge clásico**. Se adaptó toda la instalación en consecuencia (ver abajo).
 - **270 dependencias** según CurseForge (244 quedaron como `.jar` de servidor en `server/mods/`; el
   resto son resource packs/shaders client-only), categoría **"Extra Large"**.
 - **RAM recomendada por el autor: 12288 MB (12 GiB)** — dato real, visible en la app de CurseForge
@@ -41,7 +40,7 @@ scripts/        Scripts de la VM (rcon, backup, monitor, idle-stop, mc-setup ins
 backups/        Destino local de los backups (vacío).
 ```
 
-## Qué falta para dejarlo desplegable de verdad
+## Pasos pendientes
 
 1. ~~Elegir versión de Minecraft/loader~~ — resuelto: `1.21.1` + NeoForge `21.1.225`.
 2. ~~Conseguir los mods del pack~~ — resuelto: ya están en `server/mods/` (244 jars).
@@ -78,7 +77,7 @@ sin apenas mods. Este modpack (270 dependencias, categoría "Extra Large") **el 
   La familia Bsv2 tiene cuota propia de 10 vCPU sin usar, así que `B2s` (BS) + `B4s_v2` (Bsv2)
   conviven sin chocar. Ojo: la cuota **regional total** es 6 vCPU → con ambos encendidos (2+4=6)
   se queda justo al límite; no cabe nada más sin pedir ampliación de cuota.
-  ⚠️ Con 12 GiB de heap sobre 16 GiB totales quedan solo ~4 GiB para SO/GC/metaspace — funciona para
+  Ojo: con 12 GiB de heap sobre 16 GiB totales quedan solo ~4 GiB para SO/GC/metaspace — funciona para
   pocos jugadores, pero es más justo que lo ideal (los 30-40% de margen que se suelen recomendar).
   Si notas caídas o errores de memoria (OOM), el salto sería a **`Standard_B8s_v2`** (8 vCPU / 32 GiB,
   ~2x precio), pero requiere pedir ampliación de la cuota regional de 6 vCPU (con el Paper apagado
